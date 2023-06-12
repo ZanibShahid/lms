@@ -1,0 +1,64 @@
+{% load static %}
+{% block body %}
+<style>
+    .navbar {
+      background-color: #f8f9fa;
+    }
+    
+    .navbar-brand {
+      font-weight: bold;
+    }
+    
+    .navbar-nav .nav-link {
+      color: #333;
+    }
+    
+    .navbar-nav .nav-link:hover {
+      color: #007bff;
+    }
+    
+    .navbar-nav .active .nav-link {
+      color: #007bff;
+    }
+    
+    .navbar-brand img {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light ">
+   <a class="navbar-brand d-flex justify-content-center ms-2" href="{% url 'dashboard' %}">
+      <img src="{% static 'assets/img/logo.jpg' %}" alt="Logo" width="50" height="50">
+      <h3 class="ml-2 my-auto">Islamic Public School</h3>
+   </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'dashboard' %}">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'studentlist' %}">Students</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'teacherlist' %}">Instructors</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="#" alt="Profile" width="25" height="25">
+            Account
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#">My Profile</a>
+            <a class="dropdown-item" href="#">Settings</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %} IPS | Class Detail {% endblock %}
+{% block body %}
+<form method="POST">
+    {% csrf_token %}
+<div class="form__group mb-3 m-5">
+    <h6 for="room_name">Date:{{attendance_date}}</h6>
+    <h6 for="room_name">Time:{{attendance_time}}</h6>
+    <h6 for="room_name">Class:{{clas.name}}</h6>    
+</div>
+
+<div class="row m-4 mb-0">
+    <div class="col-sm-12">
+        <div class="card card-table">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-center mb-0 datatable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                {% for student in students %}
+                                <td>{{student.studentId}}</td>
+                                <td>
+                                    <h2 class="table-avatar">
+                                        <a href="student-details.html" class="avatar avatar-sm mr-2"><img
+                                                class="avatar-img rounded-circle"
+                                                src="/media/{{ student.image }}"
+                                                alt="User Image"></a>
+                                        <a href="#">{{ student.firstname }}</a>
+                                    </h2>
+                                </td>
+                                <td>
+                                    <select class="border-0" name="status_{{ student.studentId }}">
+                                        <option value="">-----</option>
+                                        <option value="present">Present</option>
+                                        <option value="absent">Absent</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <button type="submit" style="width: 200px;" class="btn btn-info mt-3 m-5">
+        Upload Attendance
+    </button>
+</form>
+{% endblock body %}
