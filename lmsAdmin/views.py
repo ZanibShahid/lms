@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib import messages
-from lmsAdmin.models import User, SchoolClass
+from lmsAdmin.models import Attendance, User, SchoolClass
 from django.contrib.auth import authenticate, login, logout
 from lmsAdmin.backends import EmailORIDAuthenticationBackend
 from django.shortcuts import render, get_object_or_404
@@ -349,35 +349,37 @@ def TeacherProfile(request,id):
     return render(request,'lmsAuth/teacherprofile.html',context)
 
 def upload_attendance(request, id):
+    classes = SchoolClass.objects.filter(pk=id).first()
+    students = classes.students.all().values('studentId','firstname','image')
+    attendance_date = date.today()
+    attendance_time = datetime.now().strftime('%I:%M %p')
+
     if request.method == 'POST':
         attendance_date = request.POST.get('attendance_date')
         attendance_time = request.POST.get('attendance_time')
         classes = request.POST.get('clas')
-        attendance_list =[]
-        for key, value in request.POST.items():
-            if key.startswith('status_'):
-                students = request.POST.get(f'students_{key.split("_")[1]}')
-                status = value
-
-
-                attendance_data = [
-                    attendance_date,
-                    attendance_time,
-                    classes,
-                    students,
-                    status
-                ]
-                attendance_list.append(attendance_data)
-        request.session['attendance_list'] = attendance_list
+        for student in students:
+            stdid = student['studentId']
+            stdname = student['firstname']
+            for key, value in request.POST.items():
+                if key.startswith('status_'):
+                    if key.endswith(str(stdid)):
+                        status = value
+                        
+                        attendance_data = Attendance(
+                            attendance_date=attendance_date,
+                            attendance_time=attendance_time,
+                            classes=classes,
+                            student_id=stdid,
+                            student_name=stdname,
+                            status=status
+                            )
+                        attendance_data.save()
         return redirect('attendance-list')
-    classes = SchoolClass.objects.filter(pk=id).first()
-    students = classes.students.all()
-    attendance_date = date.today()
-    attendance_time = datetime.now().strftime('%I:%M %p')
 
     context = {
         'clas': classes,
-        'students': students,
+        'students':students,
         'attendance_date': attendance_date,
         'attendance_time': attendance_time,
     }
@@ -385,23 +387,28 @@ def upload_attendance(request, id):
 
 
 
-def edit_attendance(request,attendance_id ):
-    attendance = {}
-    
+def edit_attendance(request,attendance_id):
     if request.method == 'POST':
-        form = AssignStudentForm(request.POST, instance=attendance)
-        if form.is_valid():
-            form.save()
-            return redirect('attendance-list')
+        attendance_id = request.POST.get('attendance_id')
+        new_status = request.POST.get('status')
+        attendance = get_object_or_404(Attendance, id=attendance_id)
+        attendance.status = new_status
+        attendance.save()
+        messages.success(request, 'Attendance updated successfully.')
+        return redirect('attendance-list')
     else:
-        form = AssignStudentForm(instance=attendance)
-    
-    return render(request, 'lmsAuth/edit-attendance.html', {'form': form, 'attendance': attendance})
+        attendance = Attendance.objects.get(id=attendance_id)
+        context = {'attendance': attendance}
+        return render(request, 'lmsAuth/edit-attendance.html', context)
+
+
 
 
 def attendance_list(request):
-    attendance_list = request.session.get('attendance_list', [])
+    attendance_list = Attendance.objects.all()
+    unique_dates = set(attendance.attendance_date for attendance in attendance_list)
     context = {
-        'attendance_list': attendance_list
+        'attendance_list': attendance_list,
+        'unique_dates': unique_dates
     }
     return render(request, 'lmsAuth/attendance_list.html', context)

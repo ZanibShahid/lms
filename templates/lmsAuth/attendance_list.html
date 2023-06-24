@@ -1,26 +1,86 @@
-<table>
-  <thead>
-      <tr>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Class</th>
-          <th>Student</th>
-          <th>Status</th>
-      </tr>
-  </thead>
-  <tbody>
-    {% for attendance in attendance_list %}
-    <p>{{ attendance }}</p>
-    <tr>
-      <td>{{ attendance.date }}</td>
-      <td>{{ attendance.time }}</td>
-      <td>{{ attendance.classes }}</td>
-      <td>{{ attendance.student }}</td>
-      <td>{{ attendance.status }}</td>
-    </tr>
-    {% empty %}
-    <p>No attendance data available.</p> 
-    {% endfor %}
-  </tbody>
+<!-- attendance-list.html -->
+
+<form id="date-form">
+    <label for="date-input">Select Date:</label>
+    <select id="date-input" name="attendance_date">
+        <option value="">All Dates</option>
+        {% for date in unique_dates %}
+            <option value="{{ date }}">{{ date }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Submit</button>
+</form>
+
+<table id="attendance-table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Class</th>
+            <th>Student ID</th>
+            <th>Student Name</th>
+            <th>Status</th>
+            <th>Actions</th> <!-- New column for edit actions -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for attendance in attendance_list %}
+            <tr>
+                <td>{{ attendance.attendance_date }}</td>
+                <td>{{ attendance.attendance_time }}</td>
+                <td>{{ attendance.classes }}</td>
+                <td>{{ attendance.student_id }}</td>
+                <td>{{ attendance.student_name }}</td>
+                <td>{{ attendance.status }}</td>
+                <td>
+                    <a href="{% url 'attendance-edit' attendance.id %}">Edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var table = document.getElementById("attendance-table");
+        var rows = table.getElementsByTagName("tr");
+
+        var today = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        for (var i = 1; i < rows.length; i++) {
+            var row = rows[i];
+            var dateCell = row.cells[0];
+            var rowDate = dateCell.textContent || dateCell.innerText;
+
+            if (rowDate === today) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        }
+    });
+
+    document.getElementById("date-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        var selectedDate = document.getElementById("date-input").value;
+
+        var table = document.getElementById("attendance-table");
+        var rows = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < rows.length; i++) {
+            var row = rows[i];
+            var dateCell = row.cells[0];
+            var rowDate = dateCell.textContent || dateCell.innerText;
+
+            if (selectedDate === "" || rowDate === selectedDate) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        }
+    });
+</script>

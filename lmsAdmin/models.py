@@ -173,3 +173,11 @@ class SchoolClass(models.Model):
 
 
 
+class Attendance(models.Model):
+    attendance_date = models.CharField(max_length=100)
+    attendance_time = models.CharField(max_length=100)
+    classes = models.CharField(max_length=100)
+    student_id = models.IntegerField()
+    student_name = models.CharField(max_length=100)
+    status = models.CharField(max_length=20)
+

@@ -3,10 +3,20 @@
 {% block body %}
 <form method="POST">
     {% csrf_token %}
+        <input type="hidden" name="attendance_date" value="{{ attendance_date }}">
+        <input type="hidden" name="attendance_time" value="{{ attendance_time }}">
+        <input type="hidden" name="clas" value="{{ clas }}">
+        {% for student in students %}
+        <input type="hidden" name="studentid" value="{{student.studentId}}">
+        <input type="hidden" name="name" value="{{student.firstname}}">
+        {% endfor %}
+        <input type="hidden" name="status" value="value">
+        <!-- rest of the form code -->
+        
 <div class="form__group mb-3 m-5">
     <h6 for="room_name">Date:{{attendance_date}}</h6>
     <h6 for="room_name">Time:{{attendance_time}}</h6>
-    <h6 for="room_name">Class:{{clas.name}}</h6>    
+    <h6 for="room_name">Class:{{clas.name}}</h6>  
 </div>
 
 <div class="row m-4 mb-0">
@@ -37,10 +47,9 @@
                                     </h2>
                                 </td>
                                 <td>
-                                    <select class="border-0" name="status_{{ student.studentId }}">
-                                        <option value="">-----</option>
-                                        <option value="present">Present</option>
-                                        <option value="absent">Absent</option>
+                                    <select class="border-0" name="status_{{ student.studentId }}" required>
+                                        <option value="Present">Present</option>
+                                        <option value="Absent">Absent</option>
                                     </select>
                                 </td>
                             </tr>
